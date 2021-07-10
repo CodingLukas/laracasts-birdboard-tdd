@@ -15,7 +15,7 @@ class ProjectsController extends Controller
      */
     public function index()
     {
-        $projects = auth()->user()->projects();
+        $projects = auth()->user()->projects()->get();
 
         return view('projects.index', compact('projects'));
     }
@@ -27,7 +27,7 @@ class ProjectsController extends Controller
      */
     public function create()
     {
-        //
+        return view('projects.create');
     }
 
     /**
