@@ -22,20 +22,34 @@ class ManageProjectsTest extends TestCase
         $this->get('/projects/create')->assertRedirect('login');
         $this->post('/projects', $project->toArray())->assertRedirect('/login');
         $this->get($project->path())->assertRedirect('login');
+    }
 
+    /** @test */
+    public function a_user_can_create_a_project()
+    {
+        $this->signIn();
+        $this->withoutMiddleware();
 
-//        $this->post('/projects', $attributes)->assertRedirect('/projects');
-//
-//        $this->assertDatabaseHas('projects', $attributes);
-//
-//        $this->get('/projects')->assertSee($attributes['title']);
+        $this->get('/projects/create')->assertStatus(200);
+
+        $attributes = [
+            'title' => $this->faker->sentence,
+            'description' => $this->faker->paragraph
+        ];
+
+        $response = $this->post('/projects', $attributes);
+
+        $response->assertRedirect(Project::where($attributes)->first()->path());
+
+        $this->assertDatabaseHas('projects', $attributes);
+
+        $this->get('/projects')->assertSee($attributes['title']);
     }
 
     /** @test */
     public function a_project_requires_a_title()
     {
-        $user = User::factory()->create();
-        $this->actingAs($user);
+        $this->signIn();
 
         $attributes = Project::factory()->raw(['title' => '']);
 
@@ -45,8 +59,7 @@ class ManageProjectsTest extends TestCase
     /** @test */
     public function a_project_requires_a_description()
     {
-        $user = User::factory()->create();
-        $this->actingAs($user);
+        $this->signIn();
 
         $attributes = Project::factory()->raw(['description' => '']);
 
@@ -56,8 +69,7 @@ class ManageProjectsTest extends TestCase
     /** @test */
     public function a_user_can_view_their_project()
     {
-        $user = User::factory()->create();
-        $this->actingAs($user);
+        $this->signIn();
 
         $this->withoutExceptionHandling();
 
@@ -87,8 +99,7 @@ class ManageProjectsTest extends TestCase
     /** @test */
     public function an_authenticated_user_cannot_view_the_projects_of_others()
     {
-        $user = User::factory()->create();
-        $this->actingAs($user);
+        $this->signIn();
 
         $project = Project::factory()->create();
 

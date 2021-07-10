@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
+use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class ProjectsController extends Controller
+class ProjectTasksController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,9 +16,7 @@ class ProjectsController extends Controller
      */
     public function index()
     {
-        $projects = auth()->user()->projects()->get();
-
-        return view('projects.index', compact('projects'));
+        //
     }
 
     /**
@@ -27,7 +26,7 @@ class ProjectsController extends Controller
      */
     public function create()
     {
-        return view('projects.create');
+        //
     }
 
     /**
@@ -36,16 +35,17 @@ class ProjectsController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function store(Request $request)
+    public function store(Project $project)
     {
-        $validated = $request->validate(
-            [
-                'title' => 'required',
-                'description' => 'required',
-            ]
+        if (auth()->user()->isNot($project->owner)) {
+            abort(403);
+        }
+
+        $validated = request()->validate(
+            ['body' => 'required']
         );
 
-        $project = auth()->user()->projects()->create($validated);
+        $project->addTask($validated);
 
         return redirect($project->path());
     }
@@ -53,25 +53,21 @@ class ProjectsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param Project $project
+     * @param $id
      * @return Response
      */
-    public function show(Project $project)
+    public function show($id)
     {
-        if (auth()->user()->isNot($project->owner)) {
-            abort(403);
-        }
-
-        return view('projects.show', compact('project'));
+        //
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param Project $project
+     * @param $id
      * @return Response
      */
-    public function edit(Project $project)
+    public function edit($id)
     {
         //
     }
@@ -80,21 +76,34 @@ class ProjectsController extends Controller
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param Project $project
+     * @param $id
      * @return Response
      */
-    public function update(Request $request, Project $project)
+    public function update(Project $project, Task $task)
     {
-        //
+        if (auth()->user()->isNot($project->owner)) {
+            abort(403);
+        }
+
+        request()->validate(['body' => 'required']);
+
+        $task->update(
+            [
+                'body' => request('body'),
+                'completed' => request()->has('completed')
+            ]
+        );
+
+        return redirect($project->path());
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param Project $project
+     * @param $id
      * @return Response
      */
-    public function destroy(Project $project)
+    public function destroy($id)
     {
         //
     }
