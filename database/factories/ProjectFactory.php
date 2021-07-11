@@ -33,4 +33,13 @@ class ProjectFactory extends Factory
             }
         );
     }
+
+    public function withOwner(User $user): Factory
+    {
+        return $this->afterMaking(
+            function (Project $project) use ($user) {
+                $project->owner_id = $user->id;
+            }
+        );
+    }
 }
