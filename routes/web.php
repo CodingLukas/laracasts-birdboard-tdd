@@ -39,6 +39,7 @@ Route::group(
         Route::get('projects/{project}', [ProjectsController::class, 'show']);
         Route::post('/projects', [ProjectsController::class, 'store']);
         Route::patch('/projects/{project}/tasks/{task}', [ProjectTasksController::class, 'update']);
+        Route::patch('/projects/{project}', [ProjectsController::class, 'update']);
 
         Route::post('/projects/{project}/tasks', [ProjectTasksController::class, 'store']);
     }
