@@ -61,6 +61,8 @@
 
                         <button type="submit" class="button">Save</button>
                     </form>
+
+                    @include ('errors')
                 </div>
             </div>
 
