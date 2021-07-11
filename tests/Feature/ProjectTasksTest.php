@@ -17,13 +17,10 @@ class ProjectTasksTest extends TestCase
     /** @test */
     public function a_project_can_have_tasks()
     {
-        $this->signIn();
+        $project = Project::factory()->create();
 
-        $projectData = Project::factory()->raw();
-        /** @var Project $project */
-        $project = auth()->user()->projects()->create($projectData);
-
-        $this->post($project->path() . '/tasks', ['body' => 'Test task']);
+        $this->actingAs($project->owner)
+            ->post($project->path() . '/tasks', ['body' => 'Test task']);
 
         $this->get($project->path())
             ->assertSee('Test task');
@@ -49,11 +46,11 @@ class ProjectTasksTest extends TestCase
         $this->signIn();
 
         /** @var Project $project */
-        $project = Project::factory()->create();
+        $project = Project::factory()->withTasks(1)->create();
         /** @var Task $task */
         $task = $project->addTask(['body' => 'test task']);
 
-        $this->patch($task->path(), ['body' => 'changed'])
+        $this->patch($project->tasks[0]->path(), ['body' => 'changed'])
             ->assertStatus(403);
 
         $this->assertDatabaseMissing('tasks', ['body' => 'changed']);
@@ -62,45 +59,28 @@ class ProjectTasksTest extends TestCase
     /** @test */
     function a_task_can_be_updated()
     {
-        $this->withoutExceptionHandling();
+        $project = Project::factory()->withTasks(1)->create();
 
-        $this->signIn();
+        $attributes = [
+            'body' => 'changed',
+            'completed' => true
+        ];
 
-        $projectData = Project::factory()->raw();
-        /** @var Project $project */
-        $project = auth()->user()->projects()->create($projectData);
+        $this->actingAs($project->owner)
+            ->patch($project->tasks[0]->path(), $attributes);
 
-        /** @var Task $task */
-        $task = $project->addTask(['body' => 'Test task']);
-
-        $this->patch(
-            $project->path() . '/tasks/' . $task->id,
-            [
-                'body' => 'changed',
-                'completed' => true
-            ]
-        );
-
-        $this->assertDatabaseHas(
-            'tasks',
-            [
-                'body' => 'changed',
-                'completed' => true
-            ]
-        );
+        $this->assertDatabaseHas('tasks', $attributes);
     }
 
     /** @test */
     public function a_task_requires_a_body()
     {
-        $this->signIn();
-
-        $projectData = Project::factory()->raw();
-        /** @var Project $project */
-        $project = auth()->user()->projects()->create($projectData);
+        $project = Project::factory()->create();
 
         $attributes = Task::factory()->raw(['body' => '']);
 
-        $this->post($project->path() . '/tasks', $attributes)->assertSessionHasErrors('body');
+        $this->actingAs($project->owner)
+            ->post($project->path() . '/tasks', $attributes)
+            ->assertSessionHasErrors('body');
     }
 }
