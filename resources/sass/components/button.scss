@@ -9,4 +9,8 @@ button {
     .theme-dark & {
         box-shadow: 0 2px 7px 0 #00658b;
     }
+
+    &.is-outlined {
+        @apply .bg-card .border .border-accent .text-accent;
+    }
 }
