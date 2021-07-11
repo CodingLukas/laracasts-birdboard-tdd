@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Arr;
 
 class Project extends Model
 {
@@ -13,6 +14,7 @@ class Project extends Model
 
     protected $guarded = [];
     protected $with = ['tasks', 'owner'];
+    public $old = [];
 
     public function path(): string
     {
@@ -41,6 +43,23 @@ class Project extends Model
 
     public function recordActivity($description)
     {
-        $this->activity()->create(compact('description'));
+        $this->activity()->create(
+            [
+                'description' => $description,
+                'changes' => $this->activityChanges($description)
+            ]
+        );
+    }
+
+    protected function activityChanges($description)
+    {
+        if ($description == 'updated') {
+            return [
+                'before' => Arr::except(array_diff($this->old, $this->getAttributes()), 'updated_at'),
+                'after' => Arr::except($this->getChanges(), 'updated_at')
+            ];
+        }
+
+        return null;
     }
 }
