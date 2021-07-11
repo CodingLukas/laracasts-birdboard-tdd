@@ -1,60 +1,68 @@
-<x-guest-layout>
-    <x-auth-card>
-        <x-slot name="logo">
-            <a href="/">
-                <x-application-logo class="w-20 h-20 fill-current text-gray-500"/>
-            </a>
-        </x-slot>
+@extends('layouts.app')
 
-        <!-- Validation Errors -->
-        <x-auth-validation-errors class="mb-4" :errors="$errors"/>
-
-        <form method="POST" action="{{ route('register') }}">
+@section('content')
+    <form method="POST" action="{{ route('register') }}"
+          class="lg:w-1/2 lg:mx-auto bg-card py-12 px-16 rounded shadow"
+    >
         @csrf
 
-        <!-- Name -->
-            <div>
-                <x-label for="name" :value="__('Name')"/>
+        <h1 class="text-2xl font-normal mb-10 text-center">Register</h1>
 
-                <x-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required
-                         autofocus/>
+        <div class="field mb-6">
+            <label class="label text-sm mb-2 block" for="name">Name</label>
+
+            <div class="control">
+                <input id="name"
+                       type="text"
+                       class="input bg-transparent border border-muted-light rounded p-2 text-xs w-full{{ $errors->has('name') ? ' is-invalid' : '' }}"
+                       name="name"
+                       value="{{ old('name') }}"
+                       required
+                       autofocus>
             </div>
+        </div>
 
-            <!-- Email Address -->
-            <div class="mt-4">
-                <x-label for="email" :value="__('Email')"/>
+        <div class="field mb-6">
+            <label class="label text-sm mb-2 block" for="email">Email Address</label>
 
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required/>
+            <div class="control">
+                <input id="email"
+                       type="email"
+                       class="input bg-transparent border border-muted-light rounded p-2 text-xs w-full{{ $errors->has('email') ? ' is-invalid' : '' }}"
+                       name="email"
+                       value="{{ old('email') }}"
+                       required>
             </div>
+        </div>
 
-            <!-- Password -->
-            <div class="mt-4">
-                <x-label for="password" :value="__('Password')"/>
+        <div class="field mb-6">
+            <label class="label text-sm mb-2 block" for="password">Password</label>
 
-                <x-input id="password" class="block mt-1 w-full"
-                         type="password"
-                         name="password"
-                         required autocomplete="new-password"/>
+            <div class="control">
+                <input id="password"
+                       type="password"
+                       class="input bg-transparent border border-muted-light rounded p-2 text-xs w-full{{ $errors->has('password') ? ' is-invalid' : '' }}"
+                       name="password"
+                       required>
             </div>
+        </div>
 
-            <!-- Confirm Password -->
-            <div class="mt-4">
-                <x-label for="password_confirmation" :value="__('Confirm Password')"/>
+        <div class="field mb-6">
+            <label class="label text-sm mb-2 block" for="password-confirmation">Confirm Password</label>
 
-                <x-input id="password_confirmation" class="block mt-1 w-full"
-                         type="password"
-                         name="password_confirmation" required/>
+            <div class="control">
+                <input id="password-confirmation"
+                       type="password"
+                       class="input bg-transparent border border-muted-light rounded p-2 text-xs w-full"
+                       name="password_confirmation"
+                       required>
             </div>
+        </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <a class="underline text-sm text-gray-600 hover:text-gray-900" href="{{ route('login') }}">
-                    {{ __('Already registered?') }}
-                </a>
-
-                <x-button class="ml-4">
-                    {{ __('Register') }}
-                </x-button>
+        <div class="field">
+            <div class="control">
+                <button type="submit" class="button is-link mr-2">Register</button>
             </div>
-        </form>
-    </x-auth-card>
-</x-guest-layout>
+        </div>
+    </form>
+@endsection

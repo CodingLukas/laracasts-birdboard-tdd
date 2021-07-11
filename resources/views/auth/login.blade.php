@@ -1,60 +1,64 @@
-<x-guest-layout>
-    <x-auth-card>
-        <x-slot name="logo">
-            <a href="/">
-                <x-application-logo class="w-20 h-20 fill-current text-gray-500"/>
-            </a>
-        </x-slot>
+@extends('layouts.app')
 
-        <!-- Session Status -->
-        <x-auth-session-status class="mb-4" :status="session('status')"/>
-
-        <!-- Validation Errors -->
-        <x-auth-validation-errors class="mb-4" :errors="$errors"/>
-
-        <form method="POST" action="{{ route('login') }}">
+@section('content')
+    <form method="POST" action="{{ route('login') }}"
+          class="lg:w-1/2 lg:mx-auto bg-card py-12 px-16 rounded shadow"
+    >
         @csrf
 
-        <!-- Email Address -->
-            <div>
-                <x-label for="email" :value="__('Email')"/>
+        <h1 class="text-2xl font-normal mb-10 text-center">Login</h1>
 
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required
-                         autofocus/>
+        <div class="field mb-6">
+            <label class="label text-sm mb-2 block" for="email">Email Address</label>
+
+            <div class="control">
+                <input id="email"
+                       type="email"
+                       class="input bg-transparent border border-muted-light rounded p-2 text-xs w-full{{ $errors->has('email') ? ' is-invalid' : '' }}"
+                       name="email"
+                       value="{{ old('email') }}"
+                       required>
             </div>
+        </div>
 
-            <!-- Password -->
-            <div class="mt-4">
-                <x-label for="password" :value="__('Password')"/>
+        <div class="field mb-6">
+            <label class="label text-sm mb-2 block" for="password">Password</label>
 
-                <x-input id="password" class="block mt-1 w-full"
-                         type="password"
-                         name="password"
-                         required autocomplete="current-password"/>
+            <div class="control">
+                <input id="password"
+                       type="password"
+                       class="input bg-transparent border border-muted-light rounded p-2 text-xs w-full{{ $errors->has('password') ? ' is-invalid' : '' }}"
+                       name="password"
+                       required>
             </div>
+        </div>
 
-            <!-- Remember Me -->
-            <div class="block mt-4">
-                <label for="remember_me" class="inline-flex items-center">
-                    <input id="remember_me" type="checkbox"
-                           class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                           name="remember">
-                    <span class="ml-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
+        <div class="field mb-6">
+            <div class="control">
+                <input class="form-check-input"
+                       type="checkbox"
+                       name="remember"
+                       id="remember"
+                    {{ old('remember') ? 'checked' : '' }}>
+
+                <label class="text-sm" for="remember">
+                    Remember Me
                 </label>
             </div>
+        </div>
 
-            <div class="flex items-center justify-end mt-4">
+        <div class="field mb-6">
+            <div class="col-md-8 offset-md-4">
+                <button type="submit" class="button mr-2">
+                    Login
+                </button>
+
                 @if (Route::has('password.request'))
-                    <a class="underline text-sm text-gray-600 hover:text-gray-900"
-                       href="{{ route('password.request') }}">
-                        {{ __('Forgot your password?') }}
+                    <a class="text-default text-sm" href="{{ route('password.request') }}">
+                        Forgot Your Password?
                     </a>
                 @endif
-
-                <x-button class="ml-3">
-                    {{ __('Log in') }}
-                </x-button>
             </div>
-        </form>
-    </x-auth-card>
-</x-guest-layout>
+        </div>
+    </form>
+@endsection
