@@ -13,6 +13,7 @@ class CreateActivitiesTable extends Migration
             function (Blueprint $table) {
                 $table->increments('id');
                 $table->foreignId('project_id')->constrained('projects')->cascadeOnDelete();
+                $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
                 $table->nullableMorphs('subject');
                 $table->string('description');
                 $table->text('changes')->nullable();
