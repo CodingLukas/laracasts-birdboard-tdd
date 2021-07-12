@@ -9,24 +9,28 @@
                         <label class="text-sm block mb-2" for="title">Title</label>
 
                         <input
-                            id="title"
                             v-model="form.title"
-                            :class="errors.title ? 'border-error' : 'border-muted-light'"
+                            id="title"
                             class="border p-2 text-xs block w-full rounded"
+                            :class="form.errors.title ? 'border-error' : 'border-muted-light'"
                             type="text">
 
-                        <span v-if="errors.title" class="text-xs italic text-error" v-text="errors.title[0]"></span>
+                        <span v-if="form.errors.title" class="text-xs italic text-error"
+                              v-text="form.errors.title[0]"></span>
                     </div>
 
                     <div class="mb-4">
                         <label class="text-sm block mb-2" for="description">Description</label>
 
-                        <textarea id="description" v-model="form.description"
-                                  class="border border-muted-light p-2 text-xs block w-full rounded"
-                                  rows="7"></textarea>
+                        <textarea
+                            id="description"
+                            v-model="form.description"
+                            :class="form.errors.description ? 'border-error' : 'border-muted-light'"
+                            class="border border-muted-light p-2 text-xs block w-full rounded"
+                            rows="7"></textarea>
 
-                        <span v-if="errors.description" class="text-xs italic text-error"
-                              v-text="errors.description[0]"></span>
+                        <span v-if="form.errors.description" class="text-xs italic text-error"
+                              v-text="form.errors.description[0]"></span>
                     </div>
                 </div>
 
@@ -35,9 +39,9 @@
                         <label class="text-sm block mb-2">Need Some Tasks?</label>
                         <input
                             v-for="task in form.tasks"
-                            v-model="task.body"
                             class="border border-muted-light mb-2 p-2 text-xs block w-full rounded"
                             placeholder="Task 1"
+                            v-model="task.body"
                             type="text">
                     </div>
 
@@ -66,30 +70,35 @@
 </template>
 
 <script>
+import BirdboardForm from './BirdboardForm';
+
 export default {
     data() {
         return {
-            form: {
+            form: new BirdboardForm({
                 title: '',
                 description: '',
                 tasks: [
                     {body: ''},
                 ]
-            },
-            errors: {}
+            })
         };
     },
+
     methods: {
         addTask() {
-            this.form.tasks.push({value: ''});
+            this.form.tasks.push({body: ''});
         },
+
         async submit() {
-            try {
-                location = (await axios.post('/projects', this.form)).data.message;
-            } catch (error) {
-                this.errors = error.response.data.errors;
+            if (!this.form.tasks[0].body) {
+                delete this.form.originalData.tasks;
             }
+
+            this.form.submit('/projects')
+                .then(response => location = response.data.message);
         }
     }
 }
 </script>
+{"mode":"full","isActive":false}
